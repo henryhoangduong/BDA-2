@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class MockUploadFile:
     """A mock UploadFile for Celery ingestion tasks."""
+
     def __init__(self, filename: str, size: int, file_path: str):
         self.filename = filename
         self.size = size
@@ -80,7 +81,9 @@ def _cleanup_resources(db, loop):
     acks_late=True,
     reject_on_worker_lost=True,
 )
-def ingest_document_task(self, file_path: str, file_name: str, file_size: int, folder_path: str = "/"):
+def ingest_document_task(
+    self, file_path: str, file_name: str, file_size: int, folder_path: str = "/"
+):
     """
     Celery task to process and ingest documents into the vector store asynchronously.
 
@@ -96,14 +99,18 @@ def ingest_document_task(self, file_path: str, file_name: str, file_size: int, f
     db = None
     loop = None
     try:
-        logger.info(f"[Ingestion] Starting for file: {file_name} (size: {file_size}, path: {file_path})")
+        logger.info(
+            f"[Ingestion] Starting for file: {file_name} (size: {file_size}, path: {file_path})"
+        )
         file_path = _validate_file_path(file_path)
         db = get_database()
         ingestion_service = DocumentIngestionService()
         mock_file = MockUploadFile(filename=file_name, size=file_size, file_path=file_path)
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        simba_doc = loop.run_until_complete(ingestion_service.ingest_document(mock_file, folder_path))
+        simba_doc = loop.run_until_complete(
+            ingestion_service.ingest_document(mock_file, folder_path)
+        )
         db.insert_documents([simba_doc])
         logger.info(f"[Ingestion] Success: {file_name} (ID: {simba_doc.id})")
         return {
@@ -114,7 +121,7 @@ def ingest_document_task(self, file_path: str, file_name: str, file_size: int, f
     except Exception as e:
         logger.error(f"[Ingestion] Failed: {str(e)}", exc_info=True)
         if self.request.retries < self.max_retries:
-            retry_delay = 2 ** self.request.retries
+            retry_delay = 2**self.request.retries
             logger.info(f"Retrying in {retry_delay} seconds (attempt {self.request.retries + 1})")
             try:
                 raise self.retry(countdown=retry_delay, exc=e)

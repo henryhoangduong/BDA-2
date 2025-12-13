@@ -1,4 +1,4 @@
-from typing import Annotated, List, Sequence, Optional
+from typing import Annotated, List, Optional, Sequence
 
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
@@ -29,7 +29,7 @@ class State(TypedDict):
     transform_attempts: Optional[int]
     sub_queries: List[str]
     # is_summary_enough: bool
-    # summaries: List[str] 
+    # summaries: List[str]
     # New: Client-facing state representation
 
 

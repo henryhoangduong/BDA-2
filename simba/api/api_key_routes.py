@@ -1,15 +1,16 @@
 """
 API routes for managing API keys.
 """
+
 import logging
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
-from simba.models.api_key import APIKeyCreate, APIKeyResponse, APIKeyInfo
-from simba.auth.api_key_service import APIKeyService
 from simba.api.middleware.auth import get_current_user, require_role, require_tenant_access
+from simba.auth.api_key_service import APIKeyService
+from simba.models.api_key import APIKeyCreate, APIKeyInfo, APIKeyResponse
 
 logger = logging.getLogger(__name__)
 
@@ -27,27 +28,26 @@ async def create_api_key(
 ):
     """
     Create a new API key for the current user.
-    
+
     Args:
         key_data: API key data
         current_user: Current authenticated user
-        
+
     Returns:
         APIKeyResponse: Created API key with the full key value
     """
     try:
         # Get user ID from current user
         user_id = UUID(current_user.get("id"))
-        
+
         # Create new API key
         key = APIKeyService.create_key(user_id, key_data)
-        
+
         return key
     except Exception as e:
         logger.error(f"Failed to create API key: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create API key"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create API key"
         )
 
 
@@ -58,27 +58,26 @@ async def get_api_keys(
 ):
     """
     Get all API keys for the current user, optionally filtered by tenant.
-    
+
     Args:
         tenant_id: Optional tenant ID to filter by
         current_user: Current authenticated user
-        
+
     Returns:
         List[APIKeyInfo]: List of API keys
     """
     try:
         # Get user ID from current user
         user_id = UUID(current_user.get("id"))
-        
+
         # Get API keys, optionally filtered by tenant
         keys = APIKeyService.get_keys(user_id, tenant_id)
-        
+
         return keys
     except Exception as e:
         logger.error(f"Failed to get API keys: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to get API keys"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to get API keys"
         )
 
 
@@ -90,7 +89,7 @@ async def delete_api_key(
 ):
     """
     Delete an API key.
-    
+
     Args:
         key_id: API key ID
         tenant_id: Optional tenant ID for additional validation
@@ -99,22 +98,18 @@ async def delete_api_key(
     try:
         # Get user ID from current user
         user_id = UUID(current_user.get("id"))
-        
+
         # Delete API key with optional tenant validation
         success = APIKeyService.delete_key(user_id, key_id, tenant_id)
-        
+
         if not success:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="API key not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to delete API key: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to delete API key"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete API key"
         )
 
 
@@ -126,7 +121,7 @@ async def deactivate_api_key(
 ):
     """
     Deactivate an API key.
-    
+
     Args:
         key_id: API key ID
         tenant_id: Optional tenant ID for additional validation
@@ -135,24 +130,20 @@ async def deactivate_api_key(
     try:
         # Get user ID from current user
         user_id = UUID(current_user.get("id"))
-        
+
         # Deactivate API key with optional tenant validation
         success = APIKeyService.deactivate_key(user_id, key_id, tenant_id)
-        
+
         if not success:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="API key not found"
-            )
-            
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
+
         return {"success": True, "message": "API key deactivated"}
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to deactivate API key: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to deactivate API key"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to deactivate API key"
         )
 
 
@@ -162,15 +153,15 @@ async def test_api_key(
 ):
     """
     Test endpoint to verify API key authentication is working.
-    
+
     Args:
         current_user: Current authenticated user
-        
+
     Returns:
         Dict with user information
     """
     is_api_key = current_user.get("auth_type") == "api_key"
-    
+
     return {
         "authenticated": True,
         "user_id": current_user.get("id"),
@@ -178,5 +169,5 @@ async def test_api_key(
         "is_api_key": is_api_key,
         "tenant_id": current_user.get("tenant_id"),
         "api_key_id": current_user.get("metadata", {}).get("api_key_id") if is_api_key else None,
-        "roles": current_user.get("roles", [])
-    } 
+        "roles": current_user.get("roles", []),
+    }

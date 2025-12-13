@@ -1,11 +1,14 @@
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
+
 from simba.core.factories.llm_factory import get_llm
 
 llm = get_llm()
 
+
 class Route(BaseModel):
     route: str = Field(description="The route to take, either 'transform_query' or 'fallback'")
+
 
 routing_prompt = ChatPromptTemplate.from_template(
     """

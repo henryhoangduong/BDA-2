@@ -59,5 +59,3 @@ class SimbaDoc(BaseModel):
     ) -> "SimbaDoc":
         """Create SimbaDoc from a list of Documents and metadata"""
         return cls(id=id, documents=documents, metadata=metadata)
-
-

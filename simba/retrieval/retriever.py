@@ -7,11 +7,12 @@ from typing import Any, Dict, List, Optional, Union
 
 from langchain.schema import Document
 
+from simba.auth.auth_service import get_supabase_client
 from simba.core.config import settings
 from simba.core.factories.vector_store_factory import VectorStoreFactory
 from simba.retrieval.base import BaseRetriever, RetrievalMethod
 from simba.retrieval.factory import RetrieverFactory
-from simba.auth.auth_service import get_supabase_client
+
 logger = logging.getLogger(__name__)
 
 
@@ -68,7 +69,9 @@ class Retriever:
 
         # Log warning if user_id is not provided (insecure)
         if user_id is None:
-            logger.warning("retrieve() called without user_id - this is not secure for multi-tenant systems")
+            logger.warning(
+                "retrieve() called without user_id - this is not secure for multi-tenant systems"
+            )
 
         # Add user_id to the kwargs for multi-tenancy
         if user_id:

@@ -32,6 +32,7 @@ def run_worker():
     click.echo("Starting Celery worker for parsing tasks...")
     os.system("celery -A simba.core.celery_config.celery_app worker --loglevel=debug")
 
+
 @cli.command("parsers")
 def run_parsers():
     """Run the Celery worker for parsing tasks."""

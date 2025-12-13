@@ -18,7 +18,7 @@ def grade(state):
 
     # Score each doc
     filtered_docs = []
-    for i,d in enumerate(documents):
+    for i, d in enumerate(documents):
         score = grade_chain.invoke({"question": question, "document": d.page_content})
         grade = score.binary_score
         if grade == "yes":

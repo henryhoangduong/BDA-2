@@ -34,4 +34,3 @@ hyde_prompt = ChatPromptTemplate.from_messages(
 
 llm = get_llm()
 hyde_chain = hyde_prompt | llm
-

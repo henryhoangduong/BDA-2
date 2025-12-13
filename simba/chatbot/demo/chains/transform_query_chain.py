@@ -1,10 +1,14 @@
+from typing import List
+
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
+
 from simba.core.factories.llm_factory import get_llm
-from typing import List
+
 # LLM
 llm = get_llm()
+
 
 class Questions(BaseModel):
     sub_queries: List[str] = Field(description="the 3 sub queries to be used for retrieval")

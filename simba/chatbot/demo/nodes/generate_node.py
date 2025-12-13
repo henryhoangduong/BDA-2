@@ -15,16 +15,13 @@ def generate(state):
     """
     print("---GENERATE---")
     question = state["messages"][-1].content
-    
+
     # Use compressed documents as context (fallback to original documents if compression not available)
     context_docs = state["documents"]
     print(f"Using {len(context_docs)} compressed documents for generation")
-    
 
     docs_content = "\n\n".join(
-        doc.page_content
-        for simbadoc in context_docs
-        for doc in getattr(simbadoc, "documents", [])
+        doc.page_content for simbadoc in context_docs for doc in getattr(simbadoc, "documents", [])
     )
 
     # summaries = state["summaries"]
@@ -44,6 +41,6 @@ def generate(state):
     return {
         "documents": state.get("documents", []),
         "compressed_documents": context_docs,
-        "messages": messages, 
-        "generation": generation
+        "messages": messages,
+        "generation": generation,
     }

@@ -11,4 +11,4 @@
 #     result = client.table('documents').select('*').limit(1).execute()
 #     assert result.data is not None
 #     assert isinstance(result.data, list)
-#     print("Supabase documents:", result.data) 
+#     print("Supabase documents:", result.data)

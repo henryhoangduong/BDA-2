@@ -53,4 +53,3 @@
 #         assert current_time is not None and 'time' in current_time, "No time returned from PostgresDB.fetch_one()"
 #     except Exception as e:
 #         pytest.fail(f"PostgresDB class test error: {e}")
-    

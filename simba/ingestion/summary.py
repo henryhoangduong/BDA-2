@@ -1,9 +1,9 @@
+from langchain_core.prompts import ChatPromptTemplate
 
 from simba.core.factories.llm_factory import get_llm
-from langchain_core.prompts import ChatPromptTemplate
 from simba.models.simbadoc import SimbaDoc
 
-llm = get_llm() 
+llm = get_llm()
 
 prompt = ChatPromptTemplate.from_template(
     """
@@ -64,7 +64,8 @@ prompt = ChatPromptTemplate.from_template(
 
 summary_chain = prompt | llm
 
-def summarize_document(simbadoc : SimbaDoc) -> str: 
+
+def summarize_document(simbadoc: SimbaDoc) -> str:
     docs_content = "\n\n".join(doc.page_content for doc in simbadoc.documents)
-    response= summary_chain.invoke({"document": docs_content}) 
+    response = summary_chain.invoke({"document": docs_content})
     return response.content
