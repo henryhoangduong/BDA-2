@@ -67,19 +67,19 @@ services:
       timeout: 3s
       retries: 3
 
-  frontend:
-    image: frontend-web:latest
-    ports:
-      - "5173:5173"
-    volumes:
-      - ../frontend:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_URL=http://localhost:5005
-      - NODE_ENV=development
-    networks:
-      - simba_network
-    restart: unless-stopped
+  # frontend:
+  #   image: frontend-web:latest
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #     - ../frontend:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - VITE_API_URL=http://localhost:5005
+  #     - NODE_ENV=development
+  #   networks:
+  #     - simba_network
+  #   restart: unless-stopped
 
   ollama:
     image: ollama/ollama:latest
