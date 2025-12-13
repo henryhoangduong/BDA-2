@@ -4,19 +4,19 @@ name: bda
 services:
   server:
     image: henryhoangduong/bda:latest
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     ports:
       - "5005:5005"
     volumes:
-      - ../config.yaml:/app/config.yaml
-      - ../uploads:/app/uploads:rw
-      - ../markdown:/app/markdown:rw
-      - ../vector_stores:/app/vector_stores:rw
-    depends_on:
-      - redis
-    networks:
-      - simba_network
+      - ./config.yaml:/app/config.yaml
+      - ./uploads:/app/uploads:rw
+      - ./markdown:/app/markdown:rw
+      - ./vector_stores:/app/vector_stores:rw
+    # depends_on:
+    #   - redis
+    # networks:
+    #   - simba_network
     runtime: ${RUNTIME:+${RUNTIME}}
     # entrypoint: ["/app/docker/docker-entrypoint.sh"]
     command: ["python", "-m", "uvicorn", "simba.__main__:create_app", "--host", "0.0.0.0", "--port", "5005", "--factory"]
