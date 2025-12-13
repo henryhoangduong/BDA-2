@@ -5,7 +5,7 @@ services:
   server:
     image: henryhoangduong/bda:latest
     env_file:
-      - ../.env
+      - .env
     ports:
       - "5005:5005"
     volumes:
