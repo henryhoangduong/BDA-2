@@ -3,7 +3,7 @@ name: bda
 
 services:
   server:
-    image: bda:latest
+    image: henryhoangduong/bda:latest
     env_file:
       - ../.env
     ports:

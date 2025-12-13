@@ -32,8 +32,10 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock ./
 
 # Install dependencies
-RUN pip install --no-cache-dir grpcio==1.67.1 && \
-    poetry install --no-interaction --no-ansi --no-root --only=main
+# RUN pip install --no-cache-dir grpcio==1.67.1 && \
+#     poetry install --no-interaction --no-ansi --no-root --only=main
+
+RUN poetry install --no-interaction --no-ansi --no-root --only=main
 
 # Stage 2: Runtime
 FROM python:3.11-slim
