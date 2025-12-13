@@ -1,4 +1,3 @@
-import React from 'react';
 
 // interface DocumentManagementHeaderProps {
 //   // stats: DocumentStatsType; // Removed unused prop

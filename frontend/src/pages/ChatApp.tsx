@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import ChatFrame from '@/components/ChatFrame';
-import { MoreVertical, RotateCw, MessageSquare } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import ChatFrame from "@/components/ChatFrame";
+import { MoreVertical, RotateCw, MessageSquare } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,18 +8,19 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Message } from '@/types/chat';
-import { config } from '@/config';
-import { FileUploadModal } from '@/components/DocumentManagement/FileUploadModal';
-import { ingestionApi } from '@/lib/ingestion_api';
-import { useToast } from '@/hooks/use-toast';
+import { Message } from "@/types/chat";
+import { config } from "@/config";
+import { FileUploadModal } from "@/components/DocumentManagement/FileUploadModal";
+import { ingestionApi } from "@/lib/ingestion_api";
+import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
-const STORAGE_KEY = 'chat_messages';
+const STORAGE_KEY = "chat_messages";
 
 const ChatApp: React.FC = () => {
-  const [isMobile, setIsMobile] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_isMobile, setIsMobile] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
     // Load messages from localStorage on initial render
     const savedMessages = localStorage.getItem(STORAGE_KEY);
@@ -33,8 +34,8 @@ const ChatApp: React.FC = () => {
       setIsMobile(window.innerWidth < 768);
     };
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Save messages to localStorage whenever they change
@@ -49,7 +50,7 @@ const ChatApp: React.FC = () => {
 
   const handleEndDiscussion = () => {
     handleClearMessages();
-    window.parent.postMessage({ type: 'CLOSE_CHAT' }, '*');
+    window.parent.postMessage({ type: "CLOSE_CHAT" }, "*");
   };
 
   const handleChatUpload = async (files: FileList) => {
@@ -60,27 +61,29 @@ const ChatApp: React.FC = () => {
       // Show toast in chat interface
       toast({
         title: "✅ Upload Successful",
-        description: "Your documents have been uploaded. Go to KMS to process them.",
+        description:
+          "Your documents have been uploaded. Go to KMS to process them.",
         className: "bg-green-50 text-green-900 border-green-200",
-        duration: 5000
+        duration: 5000,
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to upload files",
+        description:
+          error instanceof Error ? error.message : "Failed to upload files",
         variant: "destructive",
       });
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
       className="p-4 md:p-6 h-full flex flex-col"
     >
-      <motion.div 
+      <motion.div
         className="bg-white shadow-xl flex flex-col h-full rounded-xl overflow-hidden border border-gray-100"
         initial={{ y: 20 }}
         animate={{ y: 0 }}
@@ -92,13 +95,13 @@ const ChatApp: React.FC = () => {
             <h1 className="text-xl font-semibold">{config.appName}</h1>
             {messages.length > 0 && (
               <div className="ml-2 bg-white/20 text-white text-xs rounded-full px-2 py-0.5">
-                {messages.length} message{messages.length !== 1 ? 's' : ''}
+                {messages.length} message{messages.length !== 1 ? "s" : ""}
               </div>
             )}
           </div>
-          
+
           <div className="flex items-center gap-2">
-            <motion.button 
+            <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => {
@@ -109,17 +112,23 @@ const ChatApp: React.FC = () => {
             >
               <RotateCw className="h-5 w-5" />
             </motion.button>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger className="hover:bg-white/20 p-2 rounded-full transition-colors duration-200">
                 <MoreVertical className="h-5 w-5" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={handleClearMessages} className="cursor-pointer">
+                <DropdownMenuItem
+                  onClick={handleClearMessages}
+                  className="cursor-pointer"
+                >
                   Nouvelle discussion
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleEndDiscussion} className="cursor-pointer text-red-500">
+                <DropdownMenuItem
+                  onClick={handleEndDiscussion}
+                  className="cursor-pointer text-red-500"
+                >
                   Terminer la discussion
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -128,9 +137,9 @@ const ChatApp: React.FC = () => {
         </div>
 
         <div className="flex-1 overflow-hidden relative">
-          <ChatFrame 
-            messages={messages} 
-            setMessages={setMessages} 
+          <ChatFrame
+            messages={messages}
+            setMessages={setMessages}
             onUploadClick={() => setIsUploadModalOpen(true)}
           />
         </div>
@@ -146,4 +155,4 @@ const ChatApp: React.FC = () => {
   );
 };
 
-export default ChatApp; 
+export default ChatApp;

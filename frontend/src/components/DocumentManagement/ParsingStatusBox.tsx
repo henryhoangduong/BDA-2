@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { Loader2, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { parsingApi } from '@/lib/parsing_api';
-import { cn } from '@/lib/utils';
+import React, { useEffect, useState } from "react";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Loader2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { parsingApi } from "@/lib/parsing_api";
 
 interface ParsingStatusBoxProps {
   taskId: string | null;
@@ -11,8 +14,12 @@ interface ParsingStatusBoxProps {
   onCancel?: () => void;
 }
 
-export const ParsingStatusBox: React.FC<ParsingStatusBoxProps> = ({ taskId, onComplete, onCancel }) => {
-  const [status, setStatus] = useState<string>('pending');
+export const ParsingStatusBox: React.FC<ParsingStatusBoxProps> = ({
+  taskId,
+  onComplete,
+  onCancel,
+}) => {
+  const [status, setStatus] = useState<string>("pending");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,20 +30,24 @@ export const ParsingStatusBox: React.FC<ParsingStatusBoxProps> = ({ taskId, onCo
       try {
         const result = await parsingApi.getParseStatus(taskId);
         setStatus(result.status);
-        
-        if (result.status === 'SUCCESS') {
+
+        if (result.status === "SUCCESS") {
           setProgress(100);
-          if (onComplete) onComplete('PARSED');
-        } else if (result.status === 'FAILURE') {
-          setError(result.result?.error || 'Parsing failed');
-          if (onComplete) onComplete('FAILED');
+          if (onComplete) onComplete("PARSED");
+        } else if (result.status === "FAILURE") {
+          setError(result.result?.error || "Parsing failed");
+          if (onComplete) onComplete("FAILED");
         } else if (result.progress !== undefined) {
           setProgress(result.progress);
         }
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to get parsing status');
-        setStatus('error');
-        if (onComplete) onComplete('FAILED');
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Failed to get parsing status"
+        );
+        setStatus("error");
+        if (onComplete) onComplete("FAILED");
       }
     };
 
@@ -56,9 +67,9 @@ export const ParsingStatusBox: React.FC<ParsingStatusBoxProps> = ({ taskId, onCo
       <HoverCardContent className="w-auto p-2">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{progress}%</span>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-6 w-6 hover:bg-red-100 hover:text-red-600"
             onClick={onCancel}
           >
@@ -68,4 +79,4 @@ export const ParsingStatusBox: React.FC<ParsingStatusBoxProps> = ({ taskId, onCo
       </HoverCardContent>
     </HoverCard>
   );
-}; 
+};

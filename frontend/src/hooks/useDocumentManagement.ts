@@ -1,12 +1,10 @@
-import { useState, useCallback } from 'react';
-import { DocumentType, DocumentStatsType } from '@/types/document';
-
+import { useState, useCallback } from "react";
 export const useDocumentManagement = () => {
   const [documents, setDocuments] = useState<DocumentType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [stats, setStats] = useState<DocumentStatsType>({
+  const [stats, setStats] = useState<any>({
     totalDocuments: 0,
-    lastQueried: '',
+    lastQueried: "",
     totalQueries: 0,
     itemsIndexed: 0,
   });
@@ -15,9 +13,9 @@ export const useDocumentManagement = () => {
     setIsLoading(true);
     try {
       // TODO: Implement file upload logic
-      console.log('Uploading files:', files);
+      console.log("Uploading files:", files);
     } catch (error) {
-      console.error('Error uploading files:', error);
+      console.error("Error uploading files:", error);
     } finally {
       setIsLoading(false);
     }
@@ -26,15 +24,15 @@ export const useDocumentManagement = () => {
   const handleDelete = useCallback(async (id: string) => {
     try {
       // TODO: Implement delete logic
-      console.log('Deleting document:', id);
+      console.log("Deleting document:", id);
     } catch (error) {
-      console.error('Error deleting document:', error);
+      console.error("Error deleting document:", error);
     }
   }, []);
 
   const handleSearch = useCallback((query: string) => {
     // TODO: Implement search logic
-    console.log('Searching for:', query);
+    console.log("Searching for:", query);
   }, []);
 
   return {
@@ -45,4 +43,4 @@ export const useDocumentManagement = () => {
     handleDelete,
     handleSearch,
   };
-}; 
+};

@@ -1,22 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Paperclip, X, Smile, Plus, Loader2, MessageSquare, Globe, Megaphone, Image as ImageIcon, MoreHorizontal, Mic } from 'lucide-react';
-import ChatMessage from './ChatMessage';
-import { Message } from '@/types/chat';
-import Thinking from '@/components/Thinking';
-import { sendMessage, handleChatStream } from '@/lib/api';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Send, Loader2, MessageSquare, X } from "lucide-react";
+import ChatMessage from "./ChatMessage";
+import { Message } from "@/types/chat";
+import Thinking from "@/components/Thinking";
+import { sendMessage, handleChatStream } from "@/lib/api";
+
 import { useToast } from "@/hooks/use-toast";
-import SourcePanel from './SourcePanel';
-import { motion, AnimatePresence } from 'framer-motion';
-import { config } from '@/config';
+import SourcePanel from "./SourcePanel";
+import { motion, AnimatePresence } from "framer-motion";
+import { config } from "@/config";
 
 interface ChatFrameProps {
   messages: Message[];
@@ -24,8 +19,8 @@ interface ChatFrameProps {
   onUploadClick: () => void;
 }
 
-const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadClick }) => {
-  const [inputMessage, setInputMessage] = useState('');
+const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages }) => {
+  const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
@@ -35,7 +30,7 @@ const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadCl
   const { toast } = useToast();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -62,64 +57,67 @@ const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadCl
 
     // Close source panel when submitting a new message
     setSelectedMessage(null);
-    
+
     const userTimestamp = Date.now();
     const botTimestamp = userTimestamp + 1;
-    
+
     // Add user message
     const userMessage: Message = {
       id: `user-${userTimestamp}`,
-      role: 'user',
+      role: "user",
       content: inputMessage.trim(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setIsThinking(true);
-    setInputMessage('');
+    setInputMessage("");
     setIsLoading(true);
 
     try {
       const response = await sendMessage(userMessage.content);
-      
+
       // Add assistant message placeholder
       const assistantMessage: Message = {
         id: `assistant-${botTimestamp}`,
-        role: 'assistant',
-        content: '',
+        role: "assistant",
+        content: "",
         streaming: true,
         state: {},
-        followUpQuestions: []
+        followUpQuestions: [],
       };
-      
-      setMessages(prev => [...prev, assistantMessage]);
+
+      setMessages((prev) => [...prev, assistantMessage]);
       setIsThinking(false);
 
       await handleChatStream(
         response,
         (content, state) => {
-          setMessages(prev => {
+          setMessages((prev) => {
             const lastMessage = prev[prev.length - 1];
             if (lastMessage && lastMessage.id === assistantMessage.id) {
               return [
                 ...prev.slice(0, -1),
-                { 
+                {
                   ...lastMessage,
-                  content: content ? (lastMessage.content + content) : lastMessage.content,
+                  content: content
+                    ? lastMessage.content + content
+                    : lastMessage.content,
                   state: state || lastMessage.state,
-                  followUpQuestions: state?.followUpQuestions || lastMessage.followUpQuestions
-                }
+                  followUpQuestions:
+                    state?.followUpQuestions || lastMessage.followUpQuestions,
+                },
               ];
             }
             return prev;
           });
         },
         () => {
-          setMessages(prev => {
+          setMessages((prev) => {
             const lastMessage = prev[prev.length - 1];
             if (lastMessage && lastMessage.id === assistantMessage.id) {
               return [
                 ...prev.slice(0, -1),
-                { ...lastMessage, streaming: false }
+                { ...lastMessage, streaming: false },
               ];
             }
             return prev;
@@ -127,23 +125,28 @@ const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadCl
           setIsLoading(false);
         }
       );
-
     } catch (error) {
-      console.error('Error:', error);
-      
+      console.error("Error:", error);
+
       // Show error toast
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
         variant: "destructive",
         duration: 5000,
       });
 
-      setMessages(prev => [...prev, {
-        id: `error-${Date.now()}`,
-        role: 'assistant',
-        content: 'Sorry, something went wrong. Please try again.',
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `error-${Date.now()}`,
+          role: "assistant",
+          content: "Sorry, something went wrong. Please try again.",
+        },
+      ]);
       setIsLoading(false);
       setIsThinking(false);
     }
@@ -156,7 +159,7 @@ const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadCl
   };
 
   const handleSourceClick = (message: Message) => {
-    if (message.role === 'assistant' && message.state?.sources?.length > 0) {
+    if (message.role === "assistant" && message.state?.sources?.length > 0) {
       setSelectedMessage(message);
       setSourcePanelOpen(true);
     }
@@ -174,7 +177,7 @@ const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadCl
         <Card className="h-full flex flex-col rounded-none border-l-0 border-t-0 border-b-0 border-r-0 shadow-none">
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center p-4 space-y-4 opacity-70">
-              <motion.div 
+              <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -183,7 +186,9 @@ const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadCl
                 <MessageSquare className="h-8 w-8 text-blue-500" />
               </motion.div>
               <div className="text-center max-w-md space-y-2">
-                <h3 className="text-lg font-medium">Welcome to {config.appName}</h3>
+                <h3 className="text-lg font-medium">
+                  Welcome to {config.appName}
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   Ask questions, get insights, or upload documents to analyze.
                 </p>
@@ -201,7 +206,7 @@ const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadCl
                     transition={{ duration: 0.3 }}
                   >
                     <ChatMessage
-                      isAi={message.role === 'assistant'}
+                      isAi={message.role === "assistant"}
                       message={message.content}
                       streaming={message.streaming}
                       followUpQuestions={message.followUpQuestions}
@@ -227,7 +232,10 @@ const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadCl
           )}
 
           <CardFooter className="p-4 border-t bg-white">
-            <form onSubmit={handleSubmit} className="w-full flex justify-center">
+            <form
+              onSubmit={handleSubmit}
+              className="w-full flex justify-center"
+            >
               <div className="w-full max-w-3xl flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-lg border border-gray-100">
                 <Input
                   ref={inputRef}
@@ -257,19 +265,19 @@ const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadCl
       {/* Source Panel - Only displayed when open */}
       <AnimatePresence>
         {sourcePanelOpen && selectedMessage && (
-          <motion.div 
-            initial={{ x: '100%', opacity: 0 }}
+          <motion.div
+            initial={{ x: "100%", opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: '100%', opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            exit={{ x: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="h-full w-[300px] sm:w-[320px] md:w-[380px] border-l flex flex-col bg-white overflow-hidden shrink-0 shadow-md"
           >
             <div className="flex justify-between items-center p-3 border-b bg-gray-50">
               <h3 className="font-medium text-sm truncate pr-2">Sources</h3>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={closeSourcePanel} 
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={closeSourcePanel}
                 className="h-8 w-8 rounded-full hover:bg-gray-200"
               >
                 <X className="h-4 w-4" />
@@ -285,4 +293,4 @@ const ChatFrame: React.FC<ChatFrameProps> = ({ messages, setMessages, onUploadCl
   );
 };
 
-export default ChatFrame; 
+export default ChatFrame;

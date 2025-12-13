@@ -1,20 +1,39 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css'; // Import KaTeX CSS
-import { useState, useEffect, useRef } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css"; // Import KaTeX CSS
+import { useState, useEffect, useRef } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Wand2, Download, ExternalLink, RefreshCw, AlertTriangle } from 'lucide-react';
+import {
+  Pencil,
+  Trash2,
+  Wand2,
+  Download,
+  ExternalLink,
+  RefreshCw,
+  AlertTriangle,
+} from "lucide-react";
 import { ingestionApi, previewApi } from "@/lib/api_services";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 import { SimbaDoc, Document } from "@/types/document"; // Ensure SimbaDoc and Document are imported
 
 interface PreviewModalProps {
@@ -52,11 +71,11 @@ const mathStyles = `
   }
 `;
 
-const PreviewModal: React.FC<PreviewModalProps> = ({ 
-  isOpen, 
-  onClose, 
+const PreviewModal: React.FC<PreviewModalProps> = ({
+  isOpen,
+  onClose,
   document,
-  onUpdate
+  onUpdate,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(true);
@@ -88,10 +107,10 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
         // Clear iframe src to stop any ongoing loading
         try {
           if (iframeRef.current.contentWindow) {
-            iframeRef.current.src = 'about:blank';
+            iframeRef.current.src = "about:blank";
           }
         } catch (e) {
-          console.log('Failed to clean iframe:', e);
+          console.log("Failed to clean iframe:", e);
         }
       }
     };
@@ -102,10 +121,10 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
   useEffect(() => {
     if (previewLoading && document) {
       const timer = setTimeout(() => {
-        console.log('Loading timeout reached, hiding spinner');
+        console.log("Loading timeout reached, hiding spinner");
         setPreviewLoading(false);
       }, 5000); // 5 seconds
-      
+
       return () => clearTimeout(timer);
     }
   }, [previewLoading, document, retryCount]);
@@ -124,12 +143,12 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
       try {
         const [loadersResponse, parsersResponse] = await Promise.all([
           ingestionApi.getLoaders(),
-          ingestionApi.getParsers()
+          (ingestionApi as any).getParsers(),
         ]);
         setLoaders(loadersResponse);
         setParsers(parsersResponse);
       } catch (error) {
-        console.error('Error fetching loaders and parsers:', error);
+        console.error("Error fetching loaders and parsers:", error);
       }
     };
     fetchData();
@@ -152,23 +171,23 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
   const downloadFile = () => {
     if (document) {
       const previewUrl = previewApi.getPreviewUrl(document.id);
-      const a = document.createElement('a');
+      const a = (document as any).createElement("a");
       a.href = previewUrl;
       a.download = document.metadata.filename;
-      document.body.appendChild(a);
+      (document as any).body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
+      (document as any).body.removeChild(a);
     }
   };
 
   // Handle iframe loading events
   const handleIframeLoad = () => {
-    console.log('iframe loaded');
+    console.log("iframe loaded");
     setPreviewLoading(false);
   };
 
   const handleIframeError = () => {
-    console.log('iframe error');
+    console.log("iframe error");
     setPreviewLoading(false);
     setRenderFailed(true);
   };
@@ -178,15 +197,17 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
 
     // Get the preview URL from the API
     const previewUrl = previewApi.getPreviewUrl(document.id);
-    
+
     // For URL with cache busting
     const urlWithCacheBusting = `${previewUrl}?retry=${retryCount}`;
-    
+
     // Check if file is a PDF
-    const isPdf = document.metadata.file_path.toLowerCase().endsWith('.pdf');
-    
+    const isPdf = document.metadata.file_path.toLowerCase().endsWith(".pdf");
+
     // Check if file is an image
-    const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(document.metadata.file_path);
+    const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(
+      document.metadata.file_path
+    );
 
     if (previewLoading) {
       return (
@@ -215,9 +236,12 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
       return (
         <div className="flex flex-col items-center justify-center p-6 h-full">
           <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
-          <div className="text-lg font-semibold mb-2">Document Preview Blocked</div>
+          <div className="text-lg font-semibold mb-2">
+            Document Preview Blocked
+          </div>
           <div className="text-gray-600 mb-6 text-center max-w-md">
-            Your browser has blocked the document preview for security reasons. You can still download or open the document in a new tab.
+            Your browser has blocked the document preview for security reasons.
+            You can still download or open the document in a new tab.
           </div>
           <div className="flex gap-4">
             <Button variant="outline" onClick={downloadFile}>
@@ -236,8 +260,8 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
     if (isImage) {
       return (
         <div className="flex items-center justify-center p-1 h-full">
-          <img 
-            src={urlWithCacheBusting} 
+          <img
+            src={urlWithCacheBusting}
             alt={document.metadata.filename}
             className="max-w-full h-auto object-contain"
             onLoad={() => setPreviewLoading(false)}
@@ -310,11 +334,21 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
           <CardHeader className="p-3 flex flex-row justify-between items-center">
             <CardTitle className="text-lg">Original Document</CardTitle>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={downloadFile} title="Download">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={downloadFile}
+                title="Download"
+              >
                 <Download className="h-4 w-4 mr-1" />
                 Download
               </Button>
-              <Button variant="outline" size="sm" onClick={openInNewTab} title="Open in new tab">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openInNewTab}
+                title="Open in new tab"
+              >
                 <ExternalLink className="h-4 w-4 mr-1" />
                 Open in Tab
               </Button>
@@ -346,7 +380,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
                           className="h-8 w-8"
                           onClick={() => {
                             // Add your AI handler here
-                            console.log('AI magic for chunk:', index);
+                            console.log("AI magic for chunk:", index);
                           }}
                         >
                           <Wand2 className="h-4 w-4" />
@@ -357,7 +391,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
                           className="h-8 w-8"
                           onClick={() => {
                             // Add your edit handler here
-                            console.log('Edit chunk:', index);
+                            console.log("Edit chunk:", index);
                           }}
                         >
                           <Pencil className="h-4 w-4" />
@@ -368,7 +402,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
                           className="h-8 w-8 hover:bg-red-100 hover:text-red-600"
                           onClick={() => {
                             // Add your delete handler here
-                            console.log('Delete chunk:', index);
+                            console.log("Delete chunk:", index);
                           }}
                         >
                           <Trash2 className="h-4 w-4 text-red-500" />
@@ -376,7 +410,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
                       </div>
                     </div>
                     <div className="prose prose-sm max-w-none">
-                      <ChunkContent content={chunk.page_content} />
+                      <ChunkContent content={(chunk as any).page_content} />
                     </div>
                     <Separator className="my-2" />
                     <div className="text-xs text-muted-foreground break-all">
@@ -397,9 +431,9 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
     // Clear iframe content before closing
     if (iframeRef.current) {
       try {
-        iframeRef.current.src = 'about:blank';
+        iframeRef.current.src = "about:blank";
       } catch (e) {
-        console.log('Error clearing iframe source', e);
+        console.log("Error clearing iframe source", e);
       }
     }
     onClose();
@@ -410,15 +444,19 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
       <DialogContent className="w-[95vw] max-w-7xl h-[90vh] max-h-[90vh] p-6 flex flex-col">
         <DialogHeader className="space-y-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <DialogTitle>{document?.metadata.filename || 'Document Preview'}</DialogTitle>
+            <DialogTitle>
+              {document?.metadata.filename || "Document Preview"}
+            </DialogTitle>
           </div>
           {/* Add summary display if present */}
           {document?.metadata.summary && (
             <div className="flex flex-col w-full">
-              <div className="text-sm text-muted-foreground whitespace-nowrap font-semibold mb-1">Summary:</div>
+              <div className="text-sm text-muted-foreground whitespace-nowrap font-semibold mb-1">
+                Summary:
+              </div>
               <div
                 className="text-sm bg-muted rounded p-2 border border-muted-foreground/10 max-w-2xl whitespace-pre-line overflow-auto"
-                style={{ maxHeight: '180px' }}
+                style={{ maxHeight: "180px" }}
               >
                 {document.metadata.summary}
               </div>
@@ -426,17 +464,21 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
           )}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="text-sm text-muted-foreground whitespace-nowrap">Loader:</div>
+              <div className="text-sm text-muted-foreground whitespace-nowrap">
+                Loader:
+              </div>
               <div className="font-medium">{document?.metadata.loader}</div>
             </div>
-            
+
             <div className="flex items-center gap-2">
-              <div className="text-sm text-muted-foreground whitespace-nowrap">Parser:</div>
+              <div className="text-sm text-muted-foreground whitespace-nowrap">
+                Parser:
+              </div>
               <div className="font-medium">{document?.metadata.parser}</div>
             </div>
           </div>
         </DialogHeader>
-        
+
         {renderContent()}
       </DialogContent>
     </Dialog>
@@ -446,13 +488,13 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
 // Add this custom component inside the PreviewModal component
 const ChunkContent = ({ content }: { content: string }) => {
   // For safety, verify content is a string
-  if (typeof content !== 'string') {
+  if (typeof content !== "string") {
     return <div>Invalid content</div>;
   }
 
   // Check if content contains LaTeX-style math that would benefit from KaTeX
   const hasMathContent = /\$.*?\$|\${2}.*?\${2}/g.test(content);
-  
+
   // Check if content contains image markdown syntax that needs special handling
   const hasImageSyntax = /!\[(.*?)\]\((data:image\/[^)]+)\)/g.test(content);
 
@@ -461,28 +503,31 @@ const ChunkContent = ({ content }: { content: string }) => {
     // For content with images, process it using our basic formatter
     const processedContent = content
       // Manually format superscript notation for math/citations
-      .replace(/\$\{\s*\}\^{([^}]+)}\$/g, '<sup>$1</sup>')
+      .replace(/\$\{\s*\}\^{([^}]+)}\$/g, "<sup>$1</sup>")
       // Handle other LaTeX-style formatting that might appear
-      .replace(/\$\^{([^}]+)}\$/g, '<sup>$1</sup>')
-      .replace(/\$_{([^}]+)}\$/g, '<sub>$1</sub>');
-      
+      .replace(/\$\^{([^}]+)}\$/g, "<sup>$1</sup>")
+      .replace(/\$_{([^}]+)}\$/g, "<sub>$1</sub>");
+
     return (
       <>
         <style>{imageStyles}</style>
-        <div 
+        <div
           className="prose prose-sm max-w-none overflow-auto p-2"
-          dangerouslySetInnerHTML={{ 
+          dangerouslySetInnerHTML={{
             __html: processedContent
               // Convert markdown image syntax to HTML for reliable rendering
-              .replace(/!\[(.*?)\]\((data:image\/[^)]+)\)/g, '<img src="$2" alt="$1" />')
+              .replace(
+                /!\[(.*?)\]\((data:image\/[^)]+)\)/g,
+                '<img src="$2" alt="$1" />'
+              )
               // Add line breaks for better readability
-              .replace(/\n/g, '<br />')
-          }} 
+              .replace(/\n/g, "<br />"),
+          }}
         />
       </>
     );
   }
-  
+
   // For complex math content, use the full KaTeX renderer
   if (hasMathContent) {
     return (
@@ -492,22 +537,26 @@ const ChunkContent = ({ content }: { content: string }) => {
         <ReactMarkdown
           className="prose prose-sm max-w-none overflow-auto p-2"
           remarkPlugins={[remarkGfm, remarkMath]}
-          rehypePlugins={[rehypeRaw, rehypeSanitize, [rehypeKatex, { output: 'html' }]]}
+          rehypePlugins={[
+            rehypeRaw,
+            rehypeSanitize,
+            [rehypeKatex, { output: "html" }],
+          ]}
         >
           {content}
         </ReactMarkdown>
       </>
     );
   }
-  
+
   // For regular content without math or images, use normal markdown
   // But still apply the simple formatting to handle basic superscripts
   const processedContent = content
     // Manually format superscript notation for math/citations in case KaTeX isn't working
-    .replace(/\$\{\s*\}\^{([^}]+)}\$/g, '<sup>$1</sup>')
-    .replace(/\$\^{([^}]+)}\$/g, '<sup>$1</sup>')
-    .replace(/\$_{([^}]+)}\$/g, '<sub>$1</sub>');
-    
+    .replace(/\$\{\s*\}\^{([^}]+)}\$/g, "<sup>$1</sup>")
+    .replace(/\$\^{([^}]+)}\$/g, "<sup>$1</sup>")
+    .replace(/\$_{([^}]+)}\$/g, "<sub>$1</sub>");
+
   return (
     <>
       <style>{imageStyles}</style>
@@ -522,4 +571,4 @@ const ChunkContent = ({ content }: { content: string }) => {
   );
 };
 
-export default PreviewModal; 
+export default PreviewModal;

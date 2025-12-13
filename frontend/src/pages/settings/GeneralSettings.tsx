@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { authAxios } from "@/lib/supabase";
 import {
   Card,
   CardContent,
@@ -11,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import httpClient from "@/lib/http/client";
 
 interface Organization {
   id: string;
@@ -23,7 +21,8 @@ const GeneralSettings: React.FC = () => {
   const [orgName, setOrgName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [metadata, setMetadata] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_metadata, setMetadata] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -61,7 +60,7 @@ const GeneralSettings: React.FC = () => {
         // setOrgName('');
         // setMetadata('{}');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching organization:", err);
       // Keep existing error handling
       setError("Failed to load organization details");
@@ -101,7 +100,7 @@ const GeneralSettings: React.FC = () => {
       });
 
       // fetchOrganization(); // No need to refetch if the PUT is disabled
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error updating organization name:", err);
       toast({
         title: "Error",

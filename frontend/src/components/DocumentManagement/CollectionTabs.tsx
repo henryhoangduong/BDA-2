@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { SimbaDoc } from '@/types/document';
-import DocumentList from './DocumentList';
+import React, { useState, useEffect, useRef } from "react";
+import { SimbaDoc } from "@/types/document";
+import DocumentList from "./DocumentList";
 import { Button } from "@/components/ui/button";
 import { Plus, Folder, Pencil } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -15,9 +14,9 @@ interface CollectionTabsProps {
   isLoading: boolean;
   onDelete: (id: string) => void;
   onSearch: (query: string) => void;
-  onUpload: (files: FileList) => void;
+  onUpload: (files: FileList) => Promise<void>;
   onPreview: (document: SimbaDoc) => void;
-  fetchDocuments: () => void;
+  fetchDocuments: () => Promise<void>;
   onDocumentUpdate: (document: SimbaDoc) => void;
   onParse: (document: SimbaDoc) => void;
   onDisable: (document: SimbaDoc) => void;
@@ -45,11 +44,13 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   onEnable,
 }) => {
   // Initial collections setup with a dummy collection if empty
-  const [customCollections, setCustomCollections] = useState<CustomCollection[]>([]);
-  const [activeTab, setActiveTab] = useState<string>('default');
+  const [customCollections, setCustomCollections] = useState<
+    CustomCollection[]
+  >([]);
+  const [activeTab, setActiveTab] = useState<string>("default");
   const [collectionCount, setCollectionCount] = useState<number>(0);
   const [editingTabId, setEditingTabId] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState<string>('');
+  const [editingName, setEditingName] = useState<string>("");
   const editInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize collections from props
@@ -57,25 +58,28 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     if (collections.length > 0) {
       const mappedCollections = collections.map((collection, index) => ({
         ...collection,
-        displayName: collection.name === 'Default Collection' ? `Collection ${index + 1}` : collection.name
+        displayName:
+          collection.name === "Default Collection"
+            ? `Collection ${index + 1}`
+            : collection.name,
       }));
-      
+
       setCustomCollections(mappedCollections);
       setCollectionCount(mappedCollections.length);
-      
-      if (!mappedCollections.some(c => c.id === activeTab)) {
-        setActiveTab(mappedCollections[0]?.id || 'default');
+
+      if (!mappedCollections.some((c) => c.id === activeTab)) {
+        setActiveTab(mappedCollections[0]?.id || "default");
       }
     } else if (customCollections.length === 0) {
       // Create a default collection if none exist
-      const defaultCollection = { 
-        id: 'default', 
-        name: 'Default Collection', 
-        displayName: 'Collection 1', 
-        documents: [] 
+      const defaultCollection = {
+        id: "default",
+        name: "Default Collection",
+        displayName: "Collection 1",
+        documents: [],
       };
       setCustomCollections([defaultCollection]);
-      setActiveTab('default');
+      setActiveTab("default");
       setCollectionCount(1);
     }
   }, [collections]);
@@ -91,18 +95,18 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   const handleNewCollection = () => {
     const newCount = collectionCount + 1;
     setCollectionCount(newCount);
-    
+
     // Create a new collection with a unique ID
     const newCollectionId = `custom-collection-${Date.now()}`;
     const newCollection: CustomCollection = {
       id: newCollectionId,
       name: `Collection ${newCount}`,
       displayName: `Collection ${newCount}`,
-      documents: []
+      documents: [],
     };
-    
+
     // Add the new tab to the list but keep the existing ones
-    setCustomCollections(prev => [...prev, newCollection]);
+    setCustomCollections((prev) => [...prev, newCollection]);
     // Make the new tab active immediately
     setActiveTab(newCollectionId);
   };
@@ -114,19 +118,23 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   };
 
   const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       finishEditing();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setEditingTabId(null);
     }
   };
 
   const finishEditing = () => {
     if (editingTabId && editingName.trim()) {
-      setCustomCollections(prev =>
-        prev.map(collection =>
+      setCustomCollections((prev) =>
+        prev.map((collection) =>
           collection.id === editingTabId
-            ? { ...collection, displayName: editingName.trim(), name: editingName.trim() }
+            ? {
+                ...collection,
+                displayName: editingName.trim(),
+                name: editingName.trim(),
+              }
             : collection
         )
       );
@@ -136,11 +144,16 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
 
   // Return early if no collections
   if (customCollections.length === 0) {
-    return <div className="p-8 text-center text-muted-foreground">Loading collections...</div>;
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        Loading collections...
+      </div>
+    );
   }
-  
+
   // Get active collection
-  const activeCollection = customCollections.find(c => c.id === activeTab) || customCollections[0];
+  const activeCollection =
+    customCollections.find((c) => c.id === activeTab) || customCollections[0];
 
   return (
     <div className="flex flex-col w-full h-full">
@@ -151,16 +164,18 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
               key={collection.id}
               className={`relative px-6 h-12 rounded-t-lg rounded-b-none border-b-2 hover:bg-background/60 
                 group flex items-center gap-2 
-                ${activeTab === collection.id 
-                  ? 'border-primary bg-background shadow-none' 
-                  : 'border-transparent'}`}
+                ${
+                  activeTab === collection.id
+                    ? "border-primary bg-background shadow-none"
+                    : "border-transparent"
+                }`}
               onClick={() => {
                 if (editingTabId) finishEditing();
                 setActiveTab(collection.id);
               }}
             >
               <Folder className="h-4 w-4 text-muted-foreground shrink-0" />
-              
+
               {editingTabId === collection.id ? (
                 <Input
                   ref={editInputRef}
@@ -173,7 +188,9 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
                 />
               ) : (
                 <>
-                  <span className="truncate max-w-[140px]">{collection.displayName}</span>
+                  <span className="truncate max-w-[140px]">
+                    {collection.displayName}
+                  </span>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -186,9 +203,9 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
               )}
             </button>
           ))}
-          <Button 
-            size="sm" 
-            variant="ghost" 
+          <Button
+            size="sm"
+            variant="ghost"
             className="h-12 px-3 text-muted-foreground rounded-none hover:bg-background/60"
             onClick={handleNewCollection}
           >
@@ -196,7 +213,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
           </Button>
         </div>
       </div>
-      
+
       <div className="flex-1 py-6">
         {/* Render only the active collection's documents */}
         <DocumentList
@@ -208,6 +225,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
           onPreview={onPreview}
           fetchDocuments={fetchDocuments}
           onDocumentUpdate={onDocumentUpdate}
+          // @ts-expect-error extra prop not declared in DocumentListProps
           onParse={onParse}
           onDisable={onDisable}
           onEnable={onEnable}
@@ -217,4 +235,4 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   );
 };
 
-export default CollectionTabs; 
+export default CollectionTabs;

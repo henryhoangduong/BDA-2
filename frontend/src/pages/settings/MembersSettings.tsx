@@ -1,27 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { authAxios } from '@/lib/supabase';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
+import React, { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Info, Loader2, PlusIcon, Trash2 } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  ChevronFirst,
+  ChevronLast,
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  Loader2,
+  PlusIcon,
+  Trash2,
+} from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
-import httpClient from '@/lib/http/client';
+} from "@/components/ui/dropdown-menu";
+import httpClient from "@/lib/http/client";
 
 interface ProjectMember {
   id: string;
@@ -63,50 +78,59 @@ const MembersSettings: React.FC = () => {
   const fetchCurrentUser = async () => {
     try {
       setLoading(true);
-      const response = await httpClient.get('/auth/me');
-      
+      const response = await httpClient.get("/auth/me");
+
       if (response.data) {
         const userData = response.data;
-        console.log('User data:', userData);
-        
+        console.log("User data:", userData);
+
         // Extract roles from user data
         if (userData.roles && Array.isArray(userData.roles)) {
           setRoles(userData.roles);
         }
-        
+
         // Create member object from user data
         const currentMember: ProjectMember = {
-          id: userData.id || '1',
-          userId: userData.id || 'current-user',
-          name: userData.user_metadata?.name || (userData.email ? userData.email.split('@')[0] : 'User'),
-          email: userData.email || '',
-          organizationRole: userData.roles && userData.roles.length > 0 ? userData.roles[0].name : 'Owner',
-          projectRole: 'N/A on plan',
+          id: userData.id || "1",
+          userId: userData.id || "current-user",
+          name:
+            userData.user_metadata?.name ||
+            (userData.email ? userData.email.split("@")[0] : "User"),
+          email: userData.email || "",
+          organizationRole:
+            userData.roles && userData.roles.length > 0
+              ? userData.roles[0].name
+              : "Owner",
+          projectRole: "N/A on plan",
         };
-        
+
         setMembers([currentMember]);
       }
     } catch (err: unknown) {
-      console.error('Error fetching current user:', err);
-      setError('Failed to load user data');
-      
+      console.error("Error fetching current user:", err);
+      setError("Failed to load user data");
+
       // Fallback to test data if API call fails
       const fallbackMember: ProjectMember = {
-        id: '1',
-        userId: 'current-user',
-        name: 'Hamza Zerouali',
-        email: 'zeroualihamza0206@gmail.com',
-        organizationRole: 'Owner',
-        projectRole: 'N/A on plan',
+        id: "1",
+        userId: "current-user",
+        name: "Hamza Zerouali",
+        email: "zeroualihamza0206@gmail.com",
+        organizationRole: "Owner",
+        projectRole: "N/A on plan",
       };
-      
+
       // Default fallback roles
       setRoles([
-        { id: 1, name: 'admin', description: 'Full system access with all permissions' },
-        { id: 2, name: 'member', description: 'Standard access' },
-        { id: 3, name: 'viewer', description: 'Read-only access' }
+        {
+          id: 1,
+          name: "admin",
+          description: "Full system access with all permissions",
+        },
+        { id: 2, name: "member", description: "Standard access" },
+        { id: 3, name: "viewer", description: "Read-only access" },
       ]);
-      
+
       setMembers([fallbackMember]);
     } finally {
       setLoading(false);
@@ -150,7 +174,10 @@ const MembersSettings: React.FC = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
-                Columns <span className="text-sm text-gray-500">{columnsShown}/{totalColumns}</span>
+                Columns{" "}
+                <span className="text-sm text-gray-500">
+                  {columnsShown}/{totalColumns}
+                </span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -168,7 +195,7 @@ const MembersSettings: React.FC = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
+
           <Button onClick={handleAddMember} className="flex items-center gap-2">
             <PlusIcon className="h-4 w-4" /> Add new member
           </Button>
@@ -193,12 +220,14 @@ const MembersSettings: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {members.map(member => (
+            {members.map((member) => (
               <TableRow key={member.id} className="border-t hover:bg-gray-50">
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8 bg-blue-100 text-blue-600">
-                      <AvatarFallback>{getUserInitials(member.name)}</AvatarFallback>
+                      <AvatarFallback>
+                        {getUserInitials(member.name)}
+                      </AvatarFallback>
                     </Avatar>
                     <span>{member.name}</span>
                   </div>
@@ -210,11 +239,16 @@ const MembersSettings: React.FC = () => {
                       <SelectValue>{member.organizationRole}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      {Array.isArray(roles) ? roles.map(role => (
-                        <SelectItem key={role.id} value={role.name.toLowerCase()}>
-                          {role.name}
-                        </SelectItem>
-                      )) : (
+                      {Array.isArray(roles) ? (
+                        roles.map((role) => (
+                          <SelectItem
+                            key={role.id}
+                            value={role.name.toLowerCase()}
+                          >
+                            {role.name}
+                          </SelectItem>
+                        ))
+                      ) : (
                         <SelectItem value="owner">Owner</SelectItem>
                       )}
                     </SelectContent>
@@ -233,12 +267,15 @@ const MembersSettings: React.FC = () => {
           </TableBody>
         </Table>
       </Card>
-      
+
       {/* Pagination */}
       <div className="flex items-center justify-between px-2">
         <div>
           <span className="text-sm text-gray-500">Rows per page</span>
-          <Select value={rowsPerPage.toString()} onValueChange={(value) => setRowsPerPage(parseInt(value))}>
+          <Select
+            value={rowsPerPage.toString()}
+            onValueChange={(value) => setRowsPerPage(parseInt(value))}
+          >
             <SelectTrigger className="w-20 ml-2">
               <SelectValue>{rowsPerPage}</SelectValue>
             </SelectTrigger>
@@ -250,11 +287,11 @@ const MembersSettings: React.FC = () => {
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-500">
             Page
-            <Input 
+            <Input
               className="w-12 mx-2 inline-block"
               value={currentPage}
               onChange={(e) => {
@@ -266,22 +303,40 @@ const MembersSettings: React.FC = () => {
             />
             of {totalPages}
           </span>
-          
+
           <div className="flex items-center gap-1">
-            <Button variant="outline" size="icon" disabled={currentPage === 1}
-              onClick={() => setCurrentPage(1)}>
+            <Button
+              variant="outline"
+              size="icon"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(1)}
+            >
               <ChevronFirst className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" disabled={currentPage === 1}
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}>
+            <Button
+              variant="outline"
+              size="icon"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+            >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}>
+            <Button
+              variant="outline"
+              size="icon"
+              disabled={currentPage === totalPages}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+              }
+            >
               <ChevronRight className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(totalPages)}>
+            <Button
+              variant="outline"
+              size="icon"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(totalPages)}
+            >
               <ChevronLast className="h-4 w-4" />
             </Button>
           </div>
@@ -291,4 +346,4 @@ const MembersSettings: React.FC = () => {
   );
 };
 
-export default MembersSettings; 
+export default MembersSettings;
