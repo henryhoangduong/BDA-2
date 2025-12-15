@@ -2,7 +2,7 @@ import { config } from '@/config'
 
 export async function sendMessage(message: string): Promise<Response> {
   try {
-    const response = await fetch(`${config.apiUrl}/chat`, {
+    const response = await fetch(`${config.apiUrl}/chat/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
