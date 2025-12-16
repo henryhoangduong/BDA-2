@@ -8,11 +8,11 @@ services:
     #   - ../.env
     ports:
       - "5005:5005"
-    volumes:
-      - ../config.yaml:/app/config.yaml
-      - ../uploads:/app/uploads:rw
-      - ../markdown:/app/markdown:rw
-      - ../vector_stores:/app/vector_stores:rw
+    # volumes:
+    #   - ../config.yaml:/app/config.yaml
+    #   - ../uploads:/app/uploads:rw
+    #   - ../markdown:/app/markdown:rw
+    #   - ../vector_stores:/app/vector_stores:rw
     depends_on:
       - redis
     networks:
@@ -52,10 +52,10 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
-    volumes:
-      - ../config.yaml:/app/config.yaml
-      - ../uploads:/app/uploads:rw
-      - ../vector_stores:/app/vector_stores:rw
+    # volumes:
+    #   - ../config.yaml:/app/config.yaml
+    #   - ../uploads:/app/uploads:rw
+    #   - ../vector_stores:/app/vector_stores:rw
     depends_on:
       - redis
     networks:
