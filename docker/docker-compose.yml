@@ -48,8 +48,8 @@ services:
 
   celery_worker:
     image: henryhoangduong/bda:latest
-  env_file:
-    - ../.env
+  # env_file:
+  #   - ../.env
   environment:
     - REDIS_HOST=redis
     - CELERY_BROKER_URL=redis://redis:6379/0
@@ -66,10 +66,10 @@ services:
     - POSTGRES_USER
     - POSTGRES_PASSWORD
     - POSTGRES_DB
-  volumes:
-    - ../config.yaml:/app/config.yaml
-    - ../uploads:/app/uploads:rw
-    - ../vector_stores:/app/vector_stores:rw
+  # volumes:
+  #   - ../config.yaml:/app/config.yaml
+  #   - ../uploads:/app/uploads:rw
+  #   - ../vector_stores:/app/vector_stores:rw
   depends_on:
     - redis
   networks:
