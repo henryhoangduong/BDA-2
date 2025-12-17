@@ -158,12 +158,10 @@ class CelerySettings(BaseModel):
     result_backend: str = "redis://localhost:6379/1"
 
 
-class StorageSettings(BaseSettings):
+class StorageSettings(BaseModel):
     """Storage configuration settings"""
 
-    provider: str = Field(
-        default="local", description="Storage provider type: 'local', 'minio', or 'supabase'"
-    )
+    provider: str = os.getenv("STORAGE_PROVIDER", "supabase")
     minio_endpoint: Optional[str] = Field(
         default=None, description="MinIO server endpoint", env="MINIO_ENDPOINT"
     )
@@ -180,9 +178,8 @@ class StorageSettings(BaseSettings):
         default=False, description="Use secure connection to MinIO", env="MINIO_SECURE"
     )
     supabase_bucket: Optional[str] = Field(
-        default="simba-bucket",
+        default_factory=lambda: os.getenv("SUPABASE_STORAGE_BUCKET", "bda-bucket"),
         description="Supabase storage bucket name",
-        env="SUPABASE_STORAGE_BUCKET",
     )
 
 
@@ -312,21 +309,6 @@ except Exception as e:
     logger.error(f"Failed to load configuration file: {e}")
     raise
 
-# # Ensure directories exist
-# def ensure_directories():
-#     """Create necessary directories if they don't exist."""
-#     directories = [
-#         settings.paths.faiss_index_dir,
-#         settings.paths.vector_store_dir
-#     ]
-
-#     for directory in directories:
-#         directory.mkdir(parents=True, exist_ok=True)
-#         logger.info(f"Ensured directory exists: {directory}")
-
-# # Create directories on import
-# ensure_directories()
-
 if __name__ == "__main__":
     print("\nCurrent Settings:")
     print(f"Base Directory: {settings.paths.base_dir}")
@@ -336,7 +318,7 @@ if __name__ == "__main__":
     print(f"Vector Store Provider: {settings.vector_store.provider}")
 
     print("=" * 50)
-    print("Starting SIMBA Application")
+    print("Starting BDA Application")
     print("=" * 50)
 
     # Project Info
@@ -361,5 +343,10 @@ if __name__ == "__main__":
     print(f"Base Directory: {settings.paths.base_dir}")
     print(f"Upload Directory: {settings.paths.upload_dir}")
     print(f"Vector Store Directory: {settings.paths.vector_store_dir}")
+
+    # Storage
+    print("\nStorage:")
+    print(f"Storage Provider: {settings.storage.provider}")
+    print(f"Storage Supabase Bucket: {settings.storage.supabase_bucket}")
 
     print("=" * 50)

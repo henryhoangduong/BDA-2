@@ -49,8 +49,8 @@ def create_app():
 
     # Initialize FastAPI app
     app = FastAPI(
-        title="Simba API",
-        description="API for Simba - A Document Processing and Retrieval System",
+        title="BDA API",
+        description="API for BDA - A Document Processing and Retrieval System",
         version="1.0.0",
     )
 
@@ -79,6 +79,11 @@ def create_app():
         logger.info(f"Vector Store Provider: {settings.vector_store.provider}")
         logger.info(f"Database Provider: {settings.database.provider}")
         logger.info(f"Database URL: {settings.supabase.url}")
+        logger.info(f"Storage provider: {settings.storage.provider}")
+
+        if settings.storage.provider == "supabase":
+            logger.info(f"Storage Supabase Bucket: {settings.storage.supabase_bucket}")
+
         # Log Supabase settings if configured
         if settings.supabase.url:
             logger.info("Supabase Auth: Configured ✅")

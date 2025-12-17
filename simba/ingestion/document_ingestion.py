@@ -86,7 +86,7 @@ class DocumentIngestionService:
             simbadoc = SimbaDoc.from_documents(
                 id=str(uuid.uuid4()), documents=document, metadata=metadata
             )
-            generate_summary_task.delay(simbadoc.model_dump())
+            # generate_summary_task.delay(simbadoc.model_dump())
             return simbadoc
 
         except Exception as e:
