@@ -48,44 +48,44 @@ services:
 
   celery_worker:
     image: henryhoangduong/bda:latest
-  env_file:
-    - ../.env
-  environment:
-    - REDIS_HOST=redis
-    - CELERY_BROKER_URL=redis://redis:6379/0
-    - CELERY_RESULT_BACKEND=redis://redis:6379/1
-    - PYTHONPATH=/app
-    - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-    - DEVICE=${DEVICE:-cpu}
-    - SUPABASE_URL
-    - SUPABASE_JWT_SECRET
-    - ANON_KEY
-    - SUPABASE_PUBLIC_KEY
-    - POSTGRES_HOST
-    - POSTGRES_PORT
-    - POSTGRES_USER
-    - POSTGRES_PASSWORD
-    - POSTGRES_DB
+    # env_file:
+    #   - ../.env
+    environment:
+      - REDIS_HOST=redis
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - PYTHONPATH=/app
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - DEVICE=${DEVICE:-cpu}
+      - SUPABASE_URL
+      - SUPABASE_JWT_SECRET
+      - ANON_KEY
+      - SUPABASE_PUBLIC_KEY
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
   # volumes:
   #   - ../config.yaml:/app/config.yaml
   #   - ../uploads:/app/uploads:rw
   #   - ../vector_stores:/app/vector_stores:rw
-  # depends_on:
-  #   - redis
-  networks:
-    - bda_network
-  runtime: ${RUNTIME:+${RUNTIME}}
+    depends_on:
+      - redis
+    networks:
+      - bda_network
+    runtime: ${RUNTIME:+${RUNTIME}}
   # entrypoint: ["/app/docker-entrypoint.sh"]
-  # command:
-  # [
-  #   "celery",
-  #   "-A",
-  #   "simba.core.celery_config.celery_app",
-  #   "worker",
-  #   "--loglevel=info",
-  #   "-Q",
-  #   "parsing",
-  # ]
+  command:
+  [
+    "celery",
+    "-A",
+    "simba.core.celery_config.celery_app",
+    "worker",
+    "--loglevel=info",
+    "-Q",
+    "parsing",
+  ]
 
   redis:
     image: redis:7-alpine
