@@ -27,8 +27,8 @@ services:
     #   - ../uploads:/app/uploads:rw
     #   - ../markdown:/app/markdown:rw
     #   - ../vector_stores:/app/vector_stores:rw
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
     networks:
       - bda_network
     runtime: ${RUNTIME:+${RUNTIME}}
@@ -70,8 +70,8 @@ services:
   #   - ../config.yaml:/app/config.yaml
   #   - ../uploads:/app/uploads:rw
   #   - ../vector_stores:/app/vector_stores:rw
-  depends_on:
-    - redis
+  # depends_on:
+  #   - redis
   networks:
     - bda_network
   runtime: ${RUNTIME:+${RUNTIME}}
