@@ -76,16 +76,16 @@ services:
       - bda_network
     runtime: ${RUNTIME:+${RUNTIME}}
   # entrypoint: ["/app/docker-entrypoint.sh"]
-  command:
-    [
-      "celery",
-      "-A",
-      "simba.core.celery_config.celery_app",
-      "worker",
-      "--loglevel=info",
-      "-Q",
-      "parsing",
-    ]
+    command:
+      [
+        "celery",
+        "-A",
+        "simba.core.celery_config.celery_app",
+        "worker",
+        "--loglevel=info",
+        "-Q",
+        "parsing",
+      ]
 
   redis:
     image: redis:7-alpine
