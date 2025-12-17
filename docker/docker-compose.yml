@@ -51,11 +51,11 @@ services:
     # env_file:
     #   - ../.env
     environment:
-      - REDIS_HOST=redis
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - REDIS_HOST
+      - CELERY_BROKER_URL
+      - CELERY_RESULT_BACKEND
       - PYTHONPATH=/app
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_API_KEY
       - DEVICE=${DEVICE:-cpu}
       - SUPABASE_URL
       - SUPABASE_JWT_SECRET
@@ -87,19 +87,19 @@ services:
         "parsing",
       ]
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    networks:
-      - bda_network
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 3
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - bda_network
+  #   volumes:
+  #     - redis_data:/data
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 3
 
   # frontend:
   #   image: frontend-web:latest
