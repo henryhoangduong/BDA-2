@@ -78,6 +78,8 @@ services:
   # entrypoint: ["/app/docker-entrypoint.sh"]
   command:
   [
+    "poetry",
+    "run",
     "celery",
     "-A",
     "simba.core.celery_config.celery_app",
