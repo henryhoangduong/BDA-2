@@ -1,0 +1,21 @@
+Most likely, the cause of zero plants is some combination of these
+things, impacting each other in difficult-to-predict ways. This, in
+its simplest form, is what we mean by nonlinear. Systems are
+not fully controllable and unpredictable. Relationships among
+parts impact what happens.
+
+You may have built a single piece of software that, for the most
+part, operated in a relatively controlled environment. When I
+did that, I couldn't always predict what would happen when I
+pushed a change to production. But for the most part, I could
+mitigate the risk of unexpected outcomes.
+
+Some bad news: nonlinear approaches are invariably more
+difficult than linear ones. Your life is not about to get easier.
+Does this make you want to throw the book across the room?
+You already have so much to do. Now I'm telling you that
+nonlinear approaches involve doing the work and figuring out
+how to do the work and improving the ways we work and
+clarifying why the work matters and learning…all the time.
+Learning all the time. Thinking deeply and also thinking deeply
+about thinking.

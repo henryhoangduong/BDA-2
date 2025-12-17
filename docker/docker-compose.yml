@@ -2,49 +2,49 @@ version: "3.9"
 name: bda
 
 services:
-  server:
-    image: henryhoangduong/bda:latest
-    environment:
-      - REDIS_HOST=redis
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/1
-      - PYTHONPATH=/app
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - DEVICE=${DEVICE:-cpu}
-      - SUPABASE_URL
-      - SUPABASE_JWT_SECRET
-      - ANON_KEY
-      - SUPABASE_PUBLIC_KEY
-      - POSTGRES_HOST
-      - POSTGRES_PORT
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-    ports:
-      - "5005:5005"
+  # server:
+  #   image: henryhoangduong/bda:latest
+  #   environment:
+  #     - REDIS_HOST=redis
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #     - CELERY_RESULT_BACKEND=redis://redis:6379/1
+  #     - PYTHONPATH=/app
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+  #     - DEVICE=${DEVICE:-cpu}
+  #     - SUPABASE_URL
+  #     - SUPABASE_JWT_SECRET
+  #     - ANON_KEY
+  #     - SUPABASE_PUBLIC_KEY
+  #     - POSTGRES_HOST
+  #     - POSTGRES_PORT
+  #     - POSTGRES_USER
+  #     - POSTGRES_PASSWORD
+  #     - POSTGRES_DB
+  #   ports:
+  #     - "5005:5005"
     # volumes:
     #   - ../config.yaml:/app/config.yaml
     #   - ../uploads:/app/uploads:rw
     #   - ../markdown:/app/markdown:rw
     #   - ../vector_stores:/app/vector_stores:rw
-    depends_on:
-      - redis
-    networks:
-      - bda_network
-    runtime: ${RUNTIME:+${RUNTIME}}
+    # depends_on:
+    #   - redis
+    # networks:
+    #   - bda_network
+    # runtime: ${RUNTIME:+${RUNTIME}}
     # entrypoint: ["/app/docker/docker-entrypoint.sh"]
-    command:
-      [
-        "python",
-        "-m",
-        "uvicorn",
-        "simba.__main__:create_app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "5005",
-        "--factory",
-      ]
+    # command:
+    #   [
+    #     "python",
+    #     "-m",
+    #     "uvicorn",
+    #     "simba.__main__:create_app",
+    #     "--host",
+    #     "0.0.0.0",
+    #     "--port",
+    #     "5005",
+    #     "--factory",
+    #   ]
 
   celery_worker:
     image: henryhoangduong/bda:latest
