@@ -41,7 +41,7 @@ const sidebarItems = [
   {
     name: "Knowledge Graph",
     icon: GitGraph,
-    path: "https://printed-carmita-henryhoangduong-92fdd0a3.koyeb.app/webui/",
+    path: import.meta.env.VITE_KNOWLEDGE_GRAPH_API,
   },
 ];
 
