@@ -13,6 +13,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Brain,
+  GitGraph,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -37,6 +38,11 @@ const sidebarItems = [
   { name: "Knowledge", icon: Brain, path: "/knowledge" },
   { name: "Plugins", icon: PlugZap, path: "/plugins" },
   { name: "API Keys", icon: Key, path: "/api-keys" },
+  {
+    name: "Knowledge Graph",
+    icon: GitGraph,
+    path: "https://printed-carmita-henryhoangduong-92fdd0a3.koyeb.app/webui/",
+  },
 ];
 
 const bottomItems = [
